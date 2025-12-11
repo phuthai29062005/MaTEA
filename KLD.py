@@ -1,11 +1,6 @@
 import numpy as np
 import random
 
-def trace(task0, task1):
-    # 6. Inverse Matrix (^-1): Nghịch đảo ma trận
-    task1 = np.linalg.inv(task1)
-    trc = np.trace(task1 @ task0)
-    return trc
 
 def KLD(task0, task1):
 
@@ -19,8 +14,8 @@ def KLD(task0, task1):
     mean_0 = np.mean(data0, axis = 0)
     mean_1 = np.mean(data1, axis = 0)
 
-    sigma_0 = np.cov(data0, rowvar = False) + np.eye(D) * 1e-6
-    sigma_1 = np.cov(data1, rowvar = False) + np.eye(D) * 1e-6
+    sigma_0 = np.cov(data0, rowvar = False) + np.eye(D) * 1e-4
+    sigma_1 = np.cov(data1, rowvar = False) + np.eye(D) * 1e-4
     
     #Tính nghịch đảo Sigma_1 (Sigma_1^-1)
     sigma_1_inv = np.linalg.inv(sigma_1)
@@ -36,8 +31,9 @@ def KLD(task0, task1):
     # = ln(det(Sigma_1)) - ln(det(Sigma_0))
     # Dùng slogdet để tính log định thức an toàn, tránh tràn số (overflow)
     sign1, logdet1 = np.linalg.slogdet(sigma_1)
+    if sign1 <= 0: logdet1 = -500 
     sign0, logdet0 = np.linalg.slogdet(sigma_0)
-
+    if sign0 <= 0: logdet0 = -500
     term_logdet = logdet1 - logdet0
 
     kld_value = 0.5 * (term_trace + term_mahalanobis - D + term_logdet)
@@ -45,4 +41,8 @@ def KLD(task0, task1):
 
 
 
-
+def caculate_similarity(task0, task1):
+    kld_0_1 = KLD(task0, task1)
+    kld_1_0 = KLD(task1, task0)
+    sim = 0.5 * (kld_0_1 + kld_1_0)
+    return sim
