@@ -32,8 +32,7 @@ def MaTEA():
     p = 0.8
     transfer_rate = 0.1
     update_rate = 0.2
-    crossover_rate = np.random.uniform(0.1, 0.9)
-    scalar_factor = np.random.uniform(0.1, 2)
+    
     Achive = [[] for _ in range(num_task + 1)]
     archive_size = 300
     task = [[] for _ in range(num_task + 1)]
@@ -67,12 +66,16 @@ def MaTEA():
         if gen % 50 == 0:     
             print(f"Generation {gen} completed.")
         
+        crossover_rate = np.random.uniform(0.1, 0.9)
+        scalar_factor = np.random.uniform(0.1, 2)
+        
         for i_idx in range(1, num_task + 1):
 
             rand_rate = np.random.uniform(0, 1)
             if rand_rate > transfer_rate:
-                task[i_idx] = DE(i_idx, task[i_idx], fitness_arr[i_idx], scalar_factor, crossover_rate)
-
+                task[i_idx], best_fit = DE(i_idx, task[i_idx], fitness_arr[i_idx], scalar_factor, crossover_rate)
+                if best_fit < history_fitness[i_idx]:
+                    history_fitness[i_idx] = best_fit
             else:
                 Probability = []
                 

@@ -17,6 +17,7 @@ def DE(x, task, fitness_arr, scalar_factor, crossover_rate):
 
     new_par = task.copy()
     shift, dim, bounds = get_task_info(f"T{x}")
+    best_fit = 1e9
     
     for i in range(len(task)):
 
@@ -36,7 +37,10 @@ def DE(x, task, fitness_arr, scalar_factor, crossover_rate):
         if new_fitness < fitness_arr[i]:
             new_par[i] = tried
             fitness_arr[i] = new_fitness
+        
+        if best_fit > fitness_arr[i]:
+            best_fit = fitness_arr[i]
     
-    return new_par
+    return new_par, best_fit
 
         
