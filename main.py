@@ -41,7 +41,7 @@ def MaTEA():
     
     rewards = np.ones((num_task + 1, num_task + 1))
     scores = np.zeros((num_task + 1, num_task + 1))
-    history_fitness = [ 1e9 for _ in range(num_task + 1)]
+    history_fitness = [float('inf') for _ in range(num_task + 1)]
     
     for i in range(1, num_task + 1):
         _, dim, _ = get_task_info(f"T{i}")
@@ -86,7 +86,7 @@ def MaTEA():
                     matrix_j = np.array(Achive[j_idx])
                     
                     sim = caculate_similarity(matrix_i, matrix_j)
-                    scores[i_idx][j_idx] = p * scores[i_idx][j_idx] + rewards[i_idx][j_idx] / abs(np.log(sim))
+                    scores[i_idx][j_idx] = p * scores[i_idx][j_idx] + rewards[i_idx][j_idx] * np.exp(-sim)
                     if scores[i_idx][j_idx] < 0:
                         scores[i_idx][j_idx] = 0.0
                     
@@ -107,7 +107,7 @@ def MaTEA():
                 for i in range(population):
                     v1 = np.random.randint(0, population)
                     j_rand = np.random.randint(0, min(len(task[selected_task][0]), len(task[i_idx][0])))
-                    new_child = crossover(task[i_idx][i], task[selected_task][v1], j_rand, crossover_rate)
+                    new_child = crossover(task[i_idx][i].copy(), task[selected_task][v1], j_rand, crossover_rate)
                     fitness_new = calculate_fitness(new_child, i_idx)
                     if fitness_new < fitness_arr[i_idx][i]:
                         task[i_idx][i] = new_child
